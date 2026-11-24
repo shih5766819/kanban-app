@@ -135,12 +135,13 @@ body {
 
 .form-grid {
   display: grid;
-  grid-template-columns: 1fr 175px 110px 155px auto;
+  grid-template-columns: 1fr 175px 155px 110px 155px auto;
   gap: 10px;
 }
 
 .todo-input,
 .todo-assignee,
+.todo-due,
 .todo-category,
 .todo-priority {
   width: 100%;
@@ -163,6 +164,7 @@ body {
 
 .todo-input:focus,
 .todo-assignee:focus,
+.todo-due:focus,
 .todo-category:focus,
 .todo-priority:focus {
   background-color: #FFFFFF;
@@ -170,6 +172,7 @@ body {
   box-shadow: 0 0 0 3px var(--accent-soft);
 }
 
+.todo-due,
 .todo-category,
 .todo-priority {
   cursor: pointer;
@@ -504,6 +507,18 @@ body {
 .badge-life {
   background-color: var(--tag-life-bg);
   color: var(--tag-life-text);
+}
+
+.badge-due {
+  background-color: var(--tag-assignee-bg);
+  color: var(--tag-assignee-text);
+  font-weight: 500;
+}
+
+.badge-due.is-due {
+  background-color: var(--prio-high-bg);
+  color: var(--prio-high-text);
+  font-weight: 600;
 }
 
 .btn-delete {

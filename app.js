@@ -26,6 +26,7 @@
   const todoForm = document.getElementById('todo-form');
   const todoInput = document.getElementById('todo-input');
   const todoAssignee = document.getElementById('todo-assignee');
+  const todoDue = document.getElementById('todo-due');
   const todoCategory = document.getElementById('todo-category');
   const todoPriority = document.getElementById('todo-priority');
   const filterTabs = document.querySelectorAll('.filter-tab');
@@ -62,6 +63,22 @@
       weekday: 'long',
     });
     todayDateEl.textContent = formatter.format(now);
+  }
+
+  // 截止日期：驗證 YYYY-MM-DD 格式，無效或未填回傳空字串
+  function normalizeDueDate(value) {
+    return typeof value === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(value)
+      ? value
+      : '';
+  }
+
+  // 取得本地時區的今日日期字串 (YYYY-MM-DD)
+  function getTodayKey() {
+    const now = new Date();
+    const y = now.getFullYear();
+    const m = String(now.getMonth() + 1).padStart(2, '0');
+    const d = String(now.getDate()).padStart(2, '0');
+    return `${y}-${m}-${d}`;
   }
 
   // 正規化單筆資料（相容舊版資料）
@@ -116,7 +133,7 @@
   }
 
   // 新增任務（預設進入 To-do 欄位並依優先程度排序）
-  function addTodo(text, assignee, category, priority) {
+  function addTodo(text, assignee, category, priority, dueDate) {
     const cleanText = text.trim();
     if (!cleanText) return;
 
@@ -130,6 +147,7 @@
       assignee: cleanAssignee,
       category: validCategory,
       priority: validPriority,
+      dueDate: normalizeDueDate(dueDate),
       status: 'todo',
       completed: false,
       createdAt: Date.now(),
@@ -254,6 +272,19 @@
       assigneeBadge.textContent = `👤 ${item.assignee}`;
       assigneeBadge.title = `負責人：${item.assignee}`;
       badgesDiv.appendChild(assigneeBadge);
+    }
+
+    const dueDate = normalizeDueDate(item.dueDate);
+    if (dueDate) {
+      const isDue = dueDate <= getTodayKey();
+      const dueLabel = dueDate.replace(/-/g, '/');
+      const dueBadge = document.createElement('span');
+      dueBadge.className = `badge badge-due${isDue ? ' is-due' : ''}`;
+      dueBadge.textContent = `📅 ${dueLabel}`;
+      dueBadge.title = isDue
+        ? `截止日期：${dueLabel}（今天到期或已過期）`
+        : `截止日期：${dueLabel}`;
+      badgesDiv.appendChild(dueBadge);
     }
 
     footerDiv.appendChild(badgesDiv);
@@ -387,10 +418,12 @@
       todoInput.value,
       todoAssignee.value,
       todoCategory.value,
-      todoPriority.value
+      todoPriority.value,
+      todoDue.value
     );
     todoInput.value = '';
     todoAssignee.value = '';
+    todoDue.value = '';
     todoPriority.value = 'medium';
     todoInput.focus();
   });
