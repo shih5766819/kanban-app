@@ -1,0 +1,6 @@
+# 只追蹤網頁專案檔，其他檔案一律忽略
+*
+!.gitignore
+!index.html
+!style.css
+!app.js
